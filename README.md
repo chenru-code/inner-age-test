@@ -1,8 +1,26 @@
-# Inner Age 心理年龄测试 — EdgeOne Makers
+# Inner Age 心理年龄测试
 
-面向 EdgeOne Makers 的静态前端 + Pages Functions + KV 版本。
+Next.js 静态前端 + CloudBase HTTP 云函数 + CloudBase PostgreSQL。旧 EdgeOne Functions 保留用于回滚。
 
-## 腾讯云部署配置
+## CloudBase 部署（推荐）
+
+1. 在「SQL 型数据库 → SQL 编辑器」执行 `cloudbase/schema.sql`。
+2. 在「SQL 型数据库 → 配置 → API 密钥」创建 `service_role` 服务端密钥。
+3. 创建 HTTP 云函数 `inner-age-api`，代码目录选择 `cloudfunctions/inner-age-api`，运行时 Node.js 18；函数必须监听 9000 端口。
+4. 为云函数配置以下加密环境变量：
+   - `CLOUDBASE_ENV_ID=inner-age-test-d9gb4g5uk995d5605`
+   - `CLOUDBASE_API_KEY=你的 service_role API 密钥`
+   - `ADMIN_SECRET=管理员强密码`
+   - `SESSION_SECRET=至少 40 位随机字符串`
+5. 在 HTTP 网关添加 `/api/*` 路由，后端指向 `inner-age-api`；将 `/*` 指向静态网站托管。
+6. 静态前端执行 `npm install && npm run build`，上传 `out` 目录。
+7. 访问同一网关域名的 `/api/health`，应返回 `{"status":"ok","database":"available"}`。
+
+不要把 `CLOUDBASE_API_KEY`、`ADMIN_SECRET` 或 `SESSION_SECRET` 放到前端、GitHub 或 `NEXT_PUBLIC_*` 变量中。RLS 表不需要面向匿名用户创建放行策略，数据库仅由服务端 `service_role` 密钥访问。
+
+`cloudbaserc.json` 可供 CloudBase CLI 部署使用；控制台手工部署时按上述参数填写即可。
+
+## EdgeOne Makers 旧版部署
 
 1. 在 EdgeOne Makers 导入此 GitHub 仓库，生产分支选择 `main`。
 2. 构建框架选择 Next.js，Node.js 22。
@@ -30,5 +48,3 @@
 邀请码、设备摘要、限流状态和审计日志保存在 EdgeOne KV。生日、答案和测试报告不写入 KV。
 
 EdgeOne KV 是最终一致性存储，跨边缘节点同步最长可能约 60 秒。当前实现适合小范围销售验证；大规模商业投流前，应把邀请码首次绑定和计数迁移到支持事务的强一致数据库。
-
-EdgeOne KV binding enabled.
