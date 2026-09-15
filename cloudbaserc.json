@@ -1,0 +1,13 @@
+{
+  "envId": "inner-age-test-d9gb4g5uk995d5605",
+  "functionRoot": "cloudfunctions",
+  "functions": [{
+    "name": "inner-age-api",
+    "dir": "inner-age-api",
+    "runtime": "Nodejs18.15",
+    "timeout": 30,
+    "memorySize": 256,
+    "isHTTP": true,
+    "ignore": [".env", ".env.*", "node_modules/**"]
+  }]
+}
