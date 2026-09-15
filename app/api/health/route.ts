@@ -1,2 +1,0 @@
-import { env } from "cloudflare:workers";
-export async function GET(){const started=Date.now();try{await env.DB.prepare("SELECT 1 AS ok").first();return Response.json({status:"ok",database:"ok",latencyMs:Date.now()-started},{headers:{"Cache-Control":"no-store"}})}catch{return Response.json({status:"degraded",database:"unavailable"},{status:503,headers:{"Cache-Control":"no-store","Retry-After":"5"}})}}
